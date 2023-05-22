@@ -6,7 +6,10 @@ import { useLoginMutation } from '../slices/usersApiSlice';
 import { setCredentials } from '../slices/authSlice';
 import { toast } from 'react-toastify';
 
+
 import FormContainer from '../components/FormContainer';
+import Loader from '../components/Loader';
+
 
 const LoginScreen = () => {
 	const [email, setEmail] = useState('');
@@ -15,7 +18,7 @@ const LoginScreen = () => {
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
 
-	const [login, { error, isLoading }] = useLoginMutation();
+	const [login, { isLoading }] = useLoginMutation();
 
 	const { userInfo } = useSelector((state) => state.auth);
 
@@ -28,8 +31,8 @@ const LoginScreen = () => {
 	const submitHandler = async (e) => {
 		e.preventDefault();
 		try {
-			const result = await login({ email, password }).unwrap();
-			dispatch(setCredentials({ ...result }));
+			const res = await login({ email, password }).unwrap();
+			dispatch(setCredentials({ ...res }));
 			navigate('/');
 		} catch (error) {
 			toast.error(error?.data?.message || error?.error);
@@ -60,6 +63,9 @@ const LoginScreen = () => {
 							setPassword(e.target.value)
 						}></Form.Control>
 				</Form.Group>
+
+				{isLoading && <Loader />}
+
 				<Button type='submit' variant='primary' className='mt-3'>
 					Sign In
 				</Button>
